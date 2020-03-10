@@ -4,7 +4,7 @@ const app = express();
 const fs = require('fs');
 const ejs = require('ejs')
 
-const uri = 'mongodb://analytics:T9s2hPcCUXx2GWn4@3.121.31.201:27017/dashboard';
+const uri = '';
 
 async function createApp() {
 
