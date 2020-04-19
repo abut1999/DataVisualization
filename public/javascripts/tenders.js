@@ -11,7 +11,7 @@ var MYLIBRARY = MYLIBRARY || (function() {
             function drawBarTable(databaseData) {
                 const originArray = [];
                 for (let i = 0; i < databaseData.length; i += 1) {
-                    originArray.push(databaseData[i].origin[0])
+                    originArray.push(databaseData[i].country)
                 }
 
                 function countBuildTypes(array) {
@@ -60,7 +60,7 @@ var MYLIBRARY = MYLIBRARY || (function() {
                 chartData = prepareDataForChart(sortedObj);
             }
 
-            //Draw tables
+            //Draw table
             $(function() {
                 $('#table').bootstrapTable({
                     data: databaseData,
@@ -80,7 +80,7 @@ var MYLIBRARY = MYLIBRARY || (function() {
                 return roundedValue;
             }
 
-            //Draw competition chart
+            //Draw tenders chart
             let chart = new Morris.Bar({
                 barSizeRatio: 0.25,
                 element: 'myfirstchart',
@@ -89,53 +89,9 @@ var MYLIBRARY = MYLIBRARY || (function() {
                 ykeys: ['value'],
                 labels: ['Value'],
                 ymax: RoundMaxValue(),
-                xLabelAngle: 70,
-                xLabelMargin: 30,
                 resize: true,
+                xLabelAngle: 60
             }, true);
-
-            //Count UniqueCompetitionsOrigins
-            function uniqueCompetitionsOrigins() {
-                const originTypes = [];
-                for (let i = 0; i < databaseData.length; i += 1) {
-                    originTypes.push(databaseData[i].origin[0]);
-                }
-                uniqueValues = originTypes.filter(function(item, pos) {
-                    return originTypes.indexOf(item) == pos;
-                })
-                return uniqueValues;
-            }
-
-            //Filtering function for columns
-            function filterTable(valueInput, dataToFilter) {
-                if (valueInput.length === 0) {
-                    $('#table').bootstrapTable("load", databaseData);
-                } else if (valueInput.length > 0) {
-                    let tempData = dataToFilter.slice();
-                    for (var i = tempData.length - 1; i >= 0; --i) {
-                        if (valueInput.includes(tempData[i].origin[0]) === false) {
-                            tempData.splice(i, 1);
-                        }
-                    }
-                    $('#table').bootstrapTable("load", tempData);
-                }
-            }
-
-            //Multiselect button for table origins column
-            $(document).ready(function() {
-                const originValues = uniqueCompetitionsOrigins();
-                $('.th-inner:contains("Origin")').append('<select id="OriginFilterButton" multiple="multiple"> </select>')
-                for (let i = 0; i < originValues.length; i += 1) {
-                    $('#OriginFilterButton').append(`<option value = "${originValues[i]}"> ${originValues[i]}</option>`)
-                }
-                $('#OriginFilterButton').multiselect({
-                    //Filtering function options
-                    onChange: function(option, checked, select) {
-                        const selectedValues = ($('#OriginFilterButton').val());
-                        filterTable(selectedValues, databaseData);
-                    }
-                });
-            });
 
             //Multiselect filtering button for Competitions
             $(document).ready(function() {
@@ -160,9 +116,8 @@ var MYLIBRARY = MYLIBRARY || (function() {
                         }
                     }
                 });
-                $('#table > thead > tr > th:nth-child(6)').attr("data-tableexport-value", "Origin");
-                $('#table > tfoot').find('tr').attr("data-tableexport-display", "none");
             });
+            $('#table > tfoot').find('tr').attr("data-tableexport-display", "none");
         }
     };
 }());

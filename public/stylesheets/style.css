@@ -55,7 +55,15 @@ body {
 }
 
 #graph-container {
-    padding: 30px;
+    padding: 10px 30px;
+    border: 1px solid #D3D3D3;
+    box-shadow: 2px 2px 3px#D3D3D3;
+    margin: 10px 0;
+    position: relative;
+}
+
+#bar-graph-container {
+    padding: 10px 30px;
     border: 1px solid #D3D3D3;
     box-shadow: 2px 2px 3px#D3D3D3;
     margin: 10px 0;
@@ -77,6 +85,12 @@ body {
 }
 
 #graph-container:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+#bar-graph-container:after {
     content: "";
     display: table;
     clear: both;
@@ -115,6 +129,49 @@ body {
 .sidebar-heading {
     font-size: .75rem;
     text-transform: uppercase;
+}
+
+.bootstrap-table .fixed-table-container .table thead th .th-inner {
+    overflow: unset !important;
+}
+
+#graph-container .btn-group .multiselect.dropdown-toggle.btn.btn-default {
+    background: #fff;
+    cursor: pointer;
+    padding: 5px 10px;
+    border: 1px solid #D3D3D3;
+    box-shadow: 2px 2px 3px#D3D3D3;
+    border-radius: 0;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    font-size: inherit;
+}
+
+#bar-graph-container .btn-group .multiselect.dropdown-toggle.btn.btn-default {
+    background: #fff;
+    cursor: pointer;
+    padding: 5px 10px;
+    border: 1px solid #D3D3D3;
+    box-shadow: 2px 2px 3px#D3D3D3;
+    border-radius: 0;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    font-size: inherit;
+}
+
+.bootstrap-table .fixed-table-container .table thead th .th-inner .btn-group .multiselect.dropdown-toggle.btn.btn-default {
+    cursor: pointer;
+    font-size: inherit;
+    color: #212529;
+    font-size: inherit;
+    padding: inherit;
+    margin: inherit;
+    border: none;
+    margin-left: 3px;
+    width: inherit;
+    height: inherit;
 }
 
 

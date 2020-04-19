@@ -1,0 +1,8 @@
+.dockerignore
+.git
+.gitignore
+.vscode
+.eslintrc.json
+node_modules
+Dockerfile
+Jenkinsfile

@@ -13,9 +13,9 @@ var MYLIBRARY = MYLIBRARY || (function() {
                 element: 'percentages',
                 xkey: 'date',
                 resize: 'true',
-                ykeys: ['peoplePerHour', 'guru', 'arcbazar'],
-                labels: ['PeoplePerHour', 'Guru', 'Arcbazar '],
-                lineColors: ['#373651', '#E65A26', '#A52A2A'],
+                ykeys: ['peopleperhour', 'guru', 'arcbazar', 'upwork'],
+                labels: ['PeoplePerHour', 'Guru', 'Arcbazar', 'Upwork'],
+                lineColors: ['#373651', '#E65A26', '#A52A2A', '#006400'],
                 behaveLikeLine: 'true',
                 rangeSelect: function(range) {
                     var start = new Date(range.start).toLocaleString(),
@@ -62,14 +62,17 @@ var MYLIBRARY = MYLIBRARY || (function() {
                         let PeoplePerhour = 0;
                         let Guru = 0;
                         let Arcbazar = 0;
+                        let Upwork = 0;
                         value.forEach(function(item) {
                             Object.values(item).forEach(function(value) {
-                                if (value === "peoplePerHour") {
+                                if (value === "PeoplePerHour") {
                                     PeoplePerhour += 1;
-                                } else if (value === "guru") {
+                                } else if (value === "Guru") {
                                     Guru += 1;
-                                } else if (value === "arcbazar") {
+                                } else if (value === "Arcbazar") {
                                     Arcbazar += 1;
+                                } else if (value === "Upwork") {
+                                    Upwork += 1;
                                 }
                             })
                         });
@@ -77,10 +80,10 @@ var MYLIBRARY = MYLIBRARY || (function() {
                             date: value[0].date,
                             peopleperhour: PeoplePerhour,
                             guru: Guru,
-                            arcbazar: Arcbazar
+                            arcbazar: Arcbazar,
+                            upwork: Upwork
                         })
                     });
-
                     chart.setData(GraphData);
                 }
 
@@ -136,26 +139,101 @@ var MYLIBRARY = MYLIBRARY || (function() {
                 }
 
                 chartData = prepareDataForChart(originTypesAmount);
-
-                new Morris.Bar({
-                    barSizeRatio: 0.25,
-                    element: 'barData',
-                    data: chartData,
-                    xkey: 'label',
-                    ykeys: ['value'],
-                    labels: ['Amount'],
-                    resize: 'true'
-                });
             }
 
-            //Draw table
+            //Draw tables
             $(function() {
                 $('#table').bootstrapTable({
-                    data: databaseData
+                    data: databaseData,
+                    exportDataType: $(this).val(),
+                    exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
+                    exportOptions: {
+                        ignoreColumn: [0],
+                    }
                 });
             });
 
             drawBarsOfCompetitions(databaseData);
+
+            let barChart = new Morris.Bar({
+                barSizeRatio: 0.25,
+                element: 'barData',
+                data: chartData,
+                xkey: 'label',
+                ykeys: ['value'],
+                labels: ['Amount'],
+                resize: 'true'
+            }, true);
+
+            //UniqueFreelanceprojectsOrigins
+            function uniqueFreelanceProjectsOrigins() {
+                const originTypes = [];
+                for (let i = 0; i < databaseData.length; i += 1) {
+                    originTypes.push(databaseData[i].origin);
+                }
+                uniqueValues = originTypes.filter(function(item, pos) {
+                    return originTypes.indexOf(item) == pos;
+                })
+                return uniqueValues;
+            }
+
+            //Filtering function
+            function filterTable(valueInput, dataToFilter) {
+                if (valueInput.length === 0) {
+                    $('#table').bootstrapTable("load", databaseData);
+                } else if (valueInput.length > 0) {
+                    let tempData = dataToFilter.slice();
+                    for (var i = tempData.length - 1; i >= 0; --i) {
+                        if (valueInput.includes(tempData[i].origin) === false) {
+                            tempData.splice(i, 1);
+                        }
+                    }
+                    $('#table').bootstrapTable("load", tempData);
+                }
+            }
+
+            //Multiselect button for table column
+            $(document).ready(function() {
+                const originValues = uniqueFreelanceProjectsOrigins();
+                $('.th-inner:contains("Origin")').append('<select id="OriginFilterButton" multiple="multiple"> </select>')
+                for (let i = 0; i < originValues.length; i += 1) {
+                    $('#OriginFilterButton').append(`<option value = "${originValues[i]}"> ${originValues[i]}</option>`)
+                }
+                $('#OriginFilterButton').multiselect({
+                    //Filtering function options
+                    onChange: function(option, checked, select) {
+                        const selectedValues = ($('#OriginFilterButton').val());
+                        filterTable(selectedValues, databaseData);
+                    }
+                });
+            });
+
+            //Multiselect filtering button for Competitions
+            $(document).ready(function() {
+                $('#bar-graph-container').append('<select id="FreelanceProjectsBarChartMultiselectFilterButton" multiple="multiple"> </select>')
+                for (let i = 0; i < chartData.length; i += 1) {
+                    $('#FreelanceProjectsBarChartMultiselectFilterButton').append(`<option value = "${chartData[i].label}"> ${chartData[i].label}</option>`)
+                }
+                $('#FreelanceProjectsBarChartMultiselectFilterButton').multiselect({
+                    //Filtering function options
+                    onChange: function(option, checked, select) {
+                        const selectedValues = ($('#FreelanceProjectsBarChartMultiselectFilterButton').val());
+                        if (selectedValues.length === 0) {
+                            barChart.setData(chartData);
+                        } else {
+                            let TempChartData = chartData.slice();
+                            for (var i = TempChartData.length - 1; i >= 0; --i) {
+                                if (selectedValues.includes(TempChartData[i].label) === false) {
+                                    TempChartData.splice(i, 1);
+                                }
+                            }
+                            barChart.setData(TempChartData);
+                        }
+                    }
+                });
+                $('#table > thead > tr > th:nth-child(6)').attr("data-tableexport-value", "Origin");
+                $('#table > tfoot').find('tr').attr("data-tableexport-display", "none");
+            });
         }
     };
 }());
